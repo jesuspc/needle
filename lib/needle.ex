@@ -20,6 +20,10 @@ defmodule Needle do
     storage[name]
   end
 
+  def define_dependencies(module, deps) do
+    :ets.insert :dependencies, { module, deps }
+  end
+
   defp init do
     unless table_initialized?, do: create_table && seed
   end
@@ -29,36 +33,11 @@ defmodule Needle do
   end
 
   defp seed do
-    :ets.insert :dependencies, { Elixir.Dependency1, %{ d2: Elixir.Dependency2 } }
-    :ets.insert :dependencies, { Elixir.Something, %{ d1: Elixir.Dependency1 } }
+    define_dependencies Elixir.NeedleTest.Something, %{ d1: Elixir.NeedleTest.Dependency1 }
+    define_dependencies Elixir.NeedleTest.Dependency1, %{ d2: Elixir.NeedleTest.Dependency2 }
   end
 
   defp create_table do
     :ets.new :dependencies, [:set, :protected, :named_table]
   end
 end
-
-defmodule Something do
-  use Needle
-  defdependency :d1
-
-  def bar do
-    d1
-  end
-end
-
-defmodule Dependency1 do
-  use Needle
-  defdependency :d2
-
-  def bar do
-    d2
-  end
-end
-
-defmodule Dependency2 do
-  def val do
-    1 
-  end
-end
-
