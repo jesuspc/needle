@@ -1,5 +1,5 @@
 defmodule Needle do
-  defmacro __using__(opts) do
+  defmacro __using__(_opts) do
     quote do
       import Needle
     end
