@@ -23,10 +23,15 @@ defmodule Needle do
   end
 
   def box do
-    case :ets.lookup :dependencies, :box do
+    case get_box do
       [{:box, box}] -> box
       _ -> Box
     end
+  end
+
+  defp get_box do
+    unless table_initialized?, do: create_table
+    :ets.lookup :dependencies, :box
   end
 
   defp table_initialized? do
