@@ -1,6 +1,5 @@
 defmodule Needle do
   defmacro __using__(opts) do
-    init
     quote do
       import Needle
     end
@@ -16,25 +15,22 @@ defmodule Needle do
   end
 
   def get_dependency(module, name) do
-    [{_, storage}] = :ets.lookup :dependencies, module
-    storage[name]
+    box.deps[module][name]
   end
 
-  def define_dependencies(module, deps) do
-    :ets.insert :dependencies, { module, deps }
+  def set_box(value) do
+    unless table_initialized?, do: create_table && :ets.insert(:dependencies, {:box, value})
   end
 
-  defp init do
-    unless table_initialized?, do: create_table && seed
+  def box do
+    case :ets.lookup :dependencies, :box do
+      [{:box, box}] -> box
+      _ -> Box
+    end
   end
 
   defp table_initialized? do
     !!Enum.find(:ets.all, &(&1 == :dependencies))
-  end
-
-  defp seed do
-    define_dependencies Elixir.NeedleTest.Something, %{ d1: Elixir.NeedleTest.Dependency1 }
-    define_dependencies Elixir.NeedleTest.Dependency1, %{ d2: Elixir.NeedleTest.Dependency2 }
   end
 
   defp create_table do
