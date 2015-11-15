@@ -4,19 +4,19 @@ defmodule NeedleTest do
 
   defmodule Something do
     use Needle
-    defdependency :d1
+    defdependency :dep_1
 
     def next do
-      d1
+      dep_1
     end
   end
 
   defmodule Dependency1 do
     use Needle
-    defdependency :d2
+    defdependency :dep_2
 
     def next do
-      d2
+      dep_2
     end
   end
 
